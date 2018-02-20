@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <sys/time.h>
+// #include <sys/time.h>
 
 #include "abdrive.h"
 #include "simpletext.h"
@@ -15,106 +15,120 @@
 #include "simulator.h"
 #endif
 
-const int arrLength = 20 * 2;
-const int turnStrength = 10;
-const int pointFreq = 1000;
-const float speedDec = 0.5;
+const int arrLength = 200;
+const int speedUp = 2;
+const int numAnglesAvg = 5;
+const float turnAmount = 3.1;
 
-int driveSpeed = 30;
+int driveSpeed = 30 * speedUp;
+int turnStrength = 7 * speedUp;
 int isTurningRight = -1;
 int lastTurn = -1;
 int numVals = 0;
 int lastTime = 0;
 
 int commands[arrLength];
-// int yPos[arrLength];
+float movingAvgAngles[numAnglesAvg];
 
-double x, y, theta;
+double x, y, theta, targetTheta;
 
-// int isNear(int x1, int y1, int x2, int y2, int range){
-//   if(abs(x1 - x2) < range && abs(y1 - y2) < range){
-//     return 1;
-//   }
-//   return 0;
-// }
+// typedef struct list {
+//     int val;
+//     struct list * next;
+// } list_t;
 
-// double getAngle(int x1, int x2, int )
+// list_t * commands = NULL; 
 
 void setCommand(){
   struct timeval tv;
   gettimeofday(&tv, NULL);
   int time = tv.tv_sec * 1e6 + tv.tv_usec;
 
-  
-  commands[numVals*2] = isTurningRight;
-  commands[numVals*2 + 1] = time - lastTime;
-  printf("x: %d, time: %d\n", commands[numVals*2], commands[numVals*2 +1]);
+  commands[numVals] = (time - lastTime)/1000;
+  printf("x: %d, time: %d\n", 1, commands[numVals]);
   lastTime = time;
   numVals ++;
   
-  
   lastTurn = isTurningRight;
+}
+
+int turn(int right){
+  if(right){
+    drive_speed(driveSpeed, driveSpeed - turnStrength);
+  }else{
+    drive_speed(driveSpeed - turnStrength, driveSpeed);
+  }
+  return right;
+}
+
+void addMovingAvg(float t){
+  for(int i = 1; i < numAnglesAvg; i++){
+    movingAvgAngles[i-1] = movingAvgAngles[i];
+  }
+  movingAvgAngles[numAnglesAvg-1] = t;
+}
+
+float getMovingAvg(){
+  float avg = 0;
+  for(int i = 0; i < numAnglesAvg; i++){
+    avg += movingAvgAngles[i];
+  }
+  return avg / numAnglesAvg;
 }
 
 
 int main(int argc, const char* argv[])
 {
-
-  // init array
   for(int i = 0; i < arrLength; i++){
     commands[i] = -1;
+  }
+  for(int i = 0; i < numAnglesAvg; i++){
+    movingAvgAngles[i] = 0;
   }
 
 #ifdef BUILDING_IN_SIMULATOR
   simulator_startNewSmokeTrail();
 #endif
-  drive_speed(driveSpeed, driveSpeed);
 
-  while(ping_cm(8) > 8)
-  {
-    
+  while(ping_cm(8) > 10){
     int irLeft = getLeftDist(3,0);
     int irRight = getRightDist(3,0);
 
-    if(irLeft < irRight){
-      drive_speed(driveSpeed, driveSpeed - turnStrength);
-      isTurningRight = 1;
-    }else{
-      drive_speed(driveSpeed- turnStrength, driveSpeed);
-      isTurningRight = 0;
-    }
+    isTurningRight = turn(irLeft < irRight);
 
     if(isTurningRight != lastTurn){
       setCommand();
     }
-    
-    // printf("IR left: %d, IR right %d\n", irLeft, irRight);
+    simulator_getPose(&x, &y, &theta);
+    addMovingAvg(theta);
   }
+  isTurningRight = !isTurningRight;
   setCommand();
-  printf("\n");
-  printf("---------------\n");
 
-  // for(int i = 0; i < arrLength; i+=2){
-  //   printf("x: %d, time: %d\n", commands[i], commands[i+1]);
-  // }
-  printf("\n");
+  printf("\n---------------\n\n");
 
   drive_speed(0,0);
+  targetTheta = getMovingAvg() + turnAmount;
+  pause(200);
   drive_goto(-20, -20);
-  drive_goto(54, -52);
-
-  driveSpeed *= speedDec;
+  pause(200);
+  drive_speed(-10,10);
+  while(theta < targetTheta){
+    simulator_getPose(&x, &y, &theta);
+    pause(100);
+  }
+  drive_speed(0,0);
+  pause(500);
+  printf("theta: %f, target theta: %f\n", theta, targetTheta);
+  // drive_goto(50, -50);
 
   for(int i = numVals-1; i >= 0; i--){
-    int turn = commands[i*2];
-    int time = commands[i*2+1] / 1000;
+    int time = commands[i];
 
-    printf("x: %d, time: %d\n", turn, time);
-    if(turn){
-      drive_speed(driveSpeed - turnStrength, driveSpeed);
-    }else{
-      drive_speed(driveSpeed, driveSpeed - turnStrength);
-    }
+    printf("x: %d, time: %d\n", 1, time);
+   
+    turn(isTurningRight);
+    isTurningRight = !isTurningRight;
     pause(time);
   }
   
