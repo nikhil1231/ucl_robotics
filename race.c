@@ -15,52 +15,74 @@
 #include "simulator.h"
 #endif
 
-const int arrLength = 200;
 const float speedUp = 2;
-const int numAnglesAvg = 5;
-const float turn90 = 3.1;
 
-int left, right;
 double driveSpeed = 30 * speedUp;
 double theta, targetTheta;
-double widthRobot = 105.8; //mm
 
-int commands[arrLength];
+int direction = 0;
+int location = -1;
 
-double getAngle(){
-  drive_getTicks (&left, &right);
-  return (left-right)*3.25/widthRobot;
+// int map[24];
+int map[7][7];
+
+void printMap(){
+    for(int i = 6; i >= 0; i--){
+        for(int j = 0; j < 7; j++){
+            printf("%i ",map[i][j]);
+        }
+        printf("\n");
+    }
 }
 
-void turn(int right){
-  if(right){
-    drive_goto(-26, 25);
-  }else{
-    drive_goto(26, -25);
-  }
+void see(){
+    int leftDist = getLeftDist();
+    int rightDist = getRightDist();
+    int frontDist = ping_cm(8);
 
-  // targetTheta = getAngle() + right * turn90;
-  // while(theta < targetTheta){
-  //   drive_speed(10,-10);
-  //   theta = getAngle();
-  //   pause(100);
-  // }
+    // see if there's a wall around
+    // leftDist = leftDist > 10 ? 1 : 0;
+    // rightDist = rightDist < 10 ? 1 : 0;
+    // frontDist = frontDist < 30 ? 1 : 0;
+
+    if(leftDist){
+        printf("wall on left\n");
+    }
+
+    printf("%i\n", leftDist);
+    printf("%i\n", rightDist);
+    printf("%i\n", frontDist);
 }
+
 
 int main(int argc, const char* argv[])
 {
 #ifdef BUILDING_IN_SIMULATOR
-  simulator_startNewSmokeTrail();
+    simulator_startNewSmokeTrail();
 #endif
 
-  for(int i = 0; i < arrLength; i++){
-    commands[i] = -1;
-  }
+    // init map
+    for(int i = 0; i < 7; i++){
+        for(int j = 0; j < 7; j++){
+            map[i][j] = i%2==1 && j%2==1 ? 1 : 0;
+        }
+    }
 
-  while(ping_cm(8) > 10){
-    int irLeft = getLeftDist(1,0);
-    int irRight = getRightDist(1,0);
-  }
-  
-  return 0;
+    // hard code first move into square 1.
+    drive_goto(140,140);
+
+    // while(ping_cm(8) > 20){
+    //     // see();
+    //     // pause(100);
+    // }
+    see();
+
+    printMap();
+
+    // while(ping_cm(8) > 10){
+    //     int irLeft = getLeftDist(1,0);
+    //     int irRight = getRightDist(1,0);
+    // }
+
+    return 0;
 }
