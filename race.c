@@ -15,43 +15,102 @@
 #include "simulator.h"
 #endif
 
-const float speedUp = 2;
-
-double driveSpeed = 30 * speedUp;
-double theta, targetTheta;
+const int IR_LIMIT = 20;
+const int US_LIMIT = 30;
+const int MOVE_DISTANCE = 122;
 
 int direction = 0;
-int location = -1;
+int location = 0;
 
-// int map[24];
 int map[7][7];
+int distances[4];
+
 
 void printMap(){
     for(int i = 6; i >= 0; i--){
         for(int j = 0; j < 7; j++){
-            printf("%i ",map[i][j]);
+            int c = map[i][j];
+            if(c == 2){
+                printf(". ");
+            }else if(c == 1){
+                printf("X ");
+            }else{
+                printf("0 ");
+            }
         }
         printf("\n");
     }
+    printf("\n");
 }
 
-void see(){
-    int leftDist = getLeftDist();
-    int rightDist = getRightDist();
-    int frontDist = ping_cm(8);
+void prettyPrintMap(){
+    printf("\n");
+    int height = 4;
+    int width = 7;
+    for(int i = 0; i < 4*height+1; i++){
+        if(i%4==0){
+            for(int j = 0; j < 4; j++){
+                for(int k = 0; k < width; k++){
+                    if((!j&&!k) || i == height*4 || !i || map[(4-i/4)*2-1][j*2]){
+                        printf("*");
+                    }else{
+                        printf(" ");
+                    }
+                }
+            }
+        }else{
+            for(int j = 0; j < 4; j++){
+                for(int k = 0; k < width; k++){
+                    if((!j && !k) || (!k && map[(3-i/4)*2][j*2-1])){
+                        printf("*");
+                    }else{
+                        printf(" ");
+                    }
+                }
+            }
+        }
+        printf("*\n");
+    }
+}
+
+void updateMap(int dists[]){
+    // north
+    if(location < 12 && dists[1] > 0) map[(location/4)*2+1][(location%4)*2] = dists[1];
+    // east
+    if(location % 4 < 3 && dists[2] > 0) map[(location/4)*2][(location%4)*2+1] = dists[2];
+    // south
+    if(location > 3 && dists[3] > 0) map[(location/4)*2-1][(location%4)*2] = dists[3];
+    // west
+    if(location % 4 && dists[0] > 0) map[(location/4)*2][(location%4)*2-1] = dists[0];
+}
+
+void see(int dists[]){
+    // Treat distances like compass, not relative to the robot.
+    int* leftDist = &dists[(direction)%4];
+    int* frontDist = &dists[(direction+1)%4];
+    int* rightDist = &dists[(direction+2)%4];
+    dists[(direction+3)%4] = -1;
+
+    *leftDist = getLeftDist();
+    *frontDist = ping_cm(8);
+    *rightDist = getRightDist();
 
     // see if there's a wall around
-    // leftDist = leftDist > 10 ? 1 : 0;
-    // rightDist = rightDist < 10 ? 1 : 0;
-    // frontDist = frontDist < 30 ? 1 : 0;
+    *leftDist = *leftDist < IR_LIMIT ? 1 : 0;
+    *rightDist = *rightDist < IR_LIMIT ? 1 : 0;
+    *frontDist = *frontDist < US_LIMIT ? 1 : 0;
 
-    if(leftDist){
-        printf("wall on left\n");
-    }
+    // printf("%i\n", *leftDist);
+    // for(int i = 0; i < 4; i++){
+    //     printf("%i\n", dists[i]);
+    // }
+}
 
-    printf("%i\n", leftDist);
-    printf("%i\n", rightDist);
-    printf("%i\n", frontDist);
+void forward(){
+    drive_goto(MOVE_DISTANCE,MOVE_DISTANCE);
+    see(distances);
+    updateMap(distances);
+    prettyPrintMap();
 }
 
 
@@ -64,25 +123,39 @@ int main(int argc, const char* argv[])
     // init map
     for(int i = 0; i < 7; i++){
         for(int j = 0; j < 7; j++){
-            map[i][j] = i%2==1 && j%2==1 ? 1 : 0;
+            map[i][j] = i%2==1 && j%2==1 ? 2 : 0;
         }
     }
 
     // hard code first move into square 1.
     drive_goto(140,140);
 
-    // while(ping_cm(8) > 20){
-    //     // see();
-    //     // pause(100);
-    // }
-    see();
+    turn(1,&direction);
 
+    see(distances);
+    updateMap(distances);
     printMap();
 
-    // while(ping_cm(8) > 10){
-    //     int irLeft = getLeftDist(1,0);
-    //     int irRight = getRightDist(1,0);
-    // }
+    location += 1;
+    forward();
+
+    turn(0,&direction);
+
+    location = 5;
+    forward();
+    location = 9;
+    forward();
+
+    turn(1,&direction);
+
+    location = 10;
+    forward();
+
+    turn(1,&direction);
+
+    location = 6;
+    forward();
+
 
     return 0;
 }
