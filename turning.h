@@ -8,10 +8,11 @@ int left, right;
 double widthRobot = 105.8; //mm
 
 
-static void turnThroughAngle(double angle)
+static void turnThroughAngle(double angle, int* dir)
 {
     int ticks = (int) round(angle*0.284);
     drive_speed(-ticks, ticks);
+    *dir = angle > 0 ? *dir + 1 : *dir - 1;
 }
 
 static double getAngle(){
@@ -19,14 +20,14 @@ static double getAngle(){
 	return (left-right)*3.25/widthRobot;
 }
 
-static void turn(int right){
-	float turn90 = 3.1;
-	if(right == 1){
+static void turn(int right, int* dir){
+	if(right){
 		drive_goto(26, -25);
+		*dir += 1;
 	}else{
 		drive_goto(-26, 25);
+		*dir -= 1;
 	}
-
   // targetTheta = getAngle() + right * turn90;
   // while(theta < targetTheta){
   //   drive_speed(10,-10);
