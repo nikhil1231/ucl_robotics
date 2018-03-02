@@ -45,71 +45,69 @@ void getMeasurements(){
 }
 
 void wallFollow(){
-
     /// enter maze:
     drive_goto(move(30.5), move(30.5));
     
-    // getMeasurements();
-
-    // start going through:
-    int counter = 0;
-    while(counter < 21){
-
-        angle = getAngle();
-        
-        //if you can turn left: do it
-        if (getLeftDist() > 13){
-            //turnThroughAngle(90);
-            pi = 2.7;
-            // turning 90 - left
-            while (getAngle() > angle - pi/2){
-                drive_speed(-20,20);
-            }
-            updateDirection(&direction,-1);
-            pause(100);
-            drive_speed(0,0);
-            pause(100);
-            forward();
-        }
-
-        // else (if you can't turn left), if you can keep going straight: go straight
-        else if (ping_cm(8) > 22){
-            forward();
-        }
-
-        // else (if you can't reach either of previous two steps), if you can turn right: do it
-        else if (getRightDist() > 13){
-            //turnThroughAngle(-90);
-            // turning 90 + right
-            pi = 2.7;
-            while (getAngle() < angle + pi/2){
-                drive_speed(20,-20);
-            }
-            updateDirection(&direction,1);
-            pause(100);
-            drive_speed(0,0);
-            pause(100);
-            forward();
-        }
-
-        // if you reached a dead end, turn back by turning 180
-        else{
-            //turnThroughAngle(180);
-            pi = 2.92;
-            // turning 180 - left
-            while (getAngle() > angle - pi){
-                drive_speed(-20,20);
-            }
-            updateDirection(&direction,2);
-            pause(100);
-            drive_speed(0,0);
-            pause(100);
-            forward();
-        }
+        getMeasurements();
     
-        // getMeasurements();
-        counter++;
-    }
+        // start going through:
+        int counter = 0;
+        while(counter < 21){
+    
+            angle = getAngle();
+            
+            //if you can turn left: do it
+            if (getLeftDist() == 20){
+                //turnThroughAngle(90);
+                pi = 2.7;
+                // turning 90 - left
+                while (getAngle() > angle - pi/2){
+                    drive_speed(-20,20);
+                }
+                updateDirection(&direction,-1);
+                pause(100);
+                drive_speed(0,0);
+                pause(100);
+                forward();
+            }
+
+            // else (if you can't turn left), if you can keep going straight: go straight
+            else if (ping_cm(8) > 22){
+                forward();
+            }
+            // else (if you can't reach either of previous two steps), if you can turn right: do it
+            else if (getRightDist() == 20){
+                //turnThroughAngle(-90);
+                // turning 90 + right
+                pi = 2.7;
+                while (getAngle() < angle + pi/2){
+                    drive_speed(20,-20);
+                }
+                updateDirection(&direction,1);
+                pause(100);
+                drive_speed(0,0);
+                pause(100);
+                forward();
+            }
+
+            // if you reached a dead end, turn back by turning 180
+            else{
+                //turnThroughAngle(180);
+                pi = 2.92;
+                // turning 180 - left
+                while (getAngle() > angle - pi){
+                    drive_speed(-20,20);
+                }
+                updateDirection(&direction,2);
+                pause(100);
+                drive_speed(0,0);
+                pause(100);
+                forward();
+            }
+        
+            getMeasurements();
+            counter++;
+        }
 }
 
 
