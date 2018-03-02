@@ -16,7 +16,6 @@
 #include "simulator.h"
 #endif
 
-
 const int MOVE_DISTANCE = 122;
 
 int direction = 0;
@@ -26,13 +25,96 @@ int map[7][7];
 int distances[4];
 int path[16];
 
+double angle;
+double pi;
+
+// move x small boxes:
+float move(float x){
+    return x*100/21;
+}
 
 void forward(){
-    drive_goto(MOVE_DISTANCE,MOVE_DISTANCE);
+    drive_goto(move(25.8), move(25.8));
     see(distances,direction);
     updateMap(distances,location,map);
-    printMap(map);
+    prettyPrintMap(map);
 }
+
+void getMeasurements(){
+    printf("right: %d\n", getRightDist());
+    printf("left: %d\n", getLeftDist());
+    printf("front: %d\n", ping_cm(8));
+    printf("----------------\n");
+}
+
+// clockwise = positive; radians
+// 90 degrees = pi/4
+
+void wallFollow(){
+
+    /// enter maze:
+    drive_goto(move(30.5), move(30.5));
+    
+    // getMeasurements();
+
+    // start going through:
+    int counter = 0;
+    while(counter < 21){
+
+        angle = getAngle();
+        
+        //if you can turn left: do it
+        if (getLeftDist() > 13){
+            //turnThroughAngle(90);
+            pi = 2.7;
+            // turning 90 - left
+            while (getAngle() > angle - pi/2){
+                drive_speed(-20,20);
+            }
+            pause(100);
+            drive_speed(0,0);
+            pause(100);
+            forward();
+        }
+
+        // else (if you can't turn left), if you can keep going straight: go straight
+        else if (ping_cm(8) > 22){
+            forward();
+        }
+
+        // else (if you can't reach either of previous two steps), if you can turn right: do it
+        else if (getRightDist() > 13){
+            //turnThroughAngle(-90);
+            // turning 90 + right
+            pi = 2.7;
+            while (getAngle() < angle + pi/2){
+                drive_speed(20,-20);
+            }
+            pause(100);
+            drive_speed(0,0);
+            pause(100);
+            forward();
+        }
+
+        // if you reached a dead end, turn back by turning 180
+        else{
+            //turnThroughAngle(180);
+            pi = 2.92;
+            // turning 180 - left
+            while (getAngle() > angle - pi){
+                drive_speed(-20,20);
+            }
+            pause(100);
+            drive_speed(0,0);
+            pause(100);
+            forward();
+        }
+    
+        // getMeasurements();
+        counter++;
+    }
+}
+
 
 int findEnd(int pos){
     // if(pos < 12) map[(pos/4)*2+1][(pos%4)*2] = dists[1];
@@ -55,8 +137,7 @@ int main(int argc, const char* argv[])
         }
     }
 
-    // hard code first move into square 1.
-    drive_goto(140,140);
+    wallFollow();
 
     see(distances,direction);
     updateMap(distances,location,map);
