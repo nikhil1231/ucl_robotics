@@ -74,9 +74,7 @@ float getMovingAvg(){
 
 double getAngle(){
   drive_getTicks (&left, &right);
-  leftDistance = left * 3.25;
-  rightDistance = right * 3.25;
-  return (leftDistance-rightDistance)/widthRobot;
+  return (left-right)*3.25/widthRobot;
 }
 
 int main(int argc, const char* argv[])
