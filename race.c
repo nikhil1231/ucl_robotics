@@ -16,7 +16,7 @@
 #include "simulator.h"
 #endif
 
-const int MOVE_DISTANCE = 122;
+const float MOVE_DISTANCE = 25.8;
 
 int direction = 0;
 int location = 0;
@@ -28,14 +28,11 @@ int path[16];
 double angle;
 double pi;
 
-// move x small boxes:
-float move(float x){
-    return x*100/21;
-}
 
 void forward(){
-    drive_goto(move(25.8), move(25.8));
-    see(distances,direction);
+    drive_goto(move(MOVE_DISTANCE), move(MOVE_DISTANCE));
+    updateLocation(&location,direction);
+    detectWalls(distances,direction);
     updateMap(distances,location,map);
     prettyPrintMap(map);
 }
@@ -46,9 +43,6 @@ void getMeasurements(){
     printf("front: %d\n", ping_cm(8));
     printf("----------------\n");
 }
-
-// clockwise = positive; radians
-// 90 degrees = pi/4
 
 void wallFollow(){
 
@@ -71,6 +65,7 @@ void wallFollow(){
             while (getAngle() > angle - pi/2){
                 drive_speed(-20,20);
             }
+            updateDirection(&direction,-1);
             pause(100);
             drive_speed(0,0);
             pause(100);
@@ -90,6 +85,7 @@ void wallFollow(){
             while (getAngle() < angle + pi/2){
                 drive_speed(20,-20);
             }
+            updateDirection(&direction,1);
             pause(100);
             drive_speed(0,0);
             pause(100);
@@ -104,6 +100,7 @@ void wallFollow(){
             while (getAngle() > angle - pi){
                 drive_speed(-20,20);
             }
+            updateDirection(&direction,2);
             pause(100);
             drive_speed(0,0);
             pause(100);
@@ -116,12 +113,12 @@ void wallFollow(){
 }
 
 
-int findEnd(int pos){
+// int findEnd(int pos){
     // if(pos < 12) map[(pos/4)*2+1][(pos%4)*2] = dists[1];
     // if(pos % 4 < 3 && dists[2] > 0) map[(pos/4)*2][(pos%4)*2+1] = dists[2];
     // if(pos > 3 && dists[3] > 0) map[(pos/4)*2-1][(pos%4)*2] = dists[3];
     // if(pos % 4 && dists[0] > 0) map[(pos/4)*2][(pos%4)*2-1] = dists[0];
-}
+// }
 
 
 int main(int argc, const char* argv[])
@@ -130,40 +127,9 @@ int main(int argc, const char* argv[])
     simulator_startNewSmokeTrail();
 #endif
 
-    // init map
-    for(int i = 0; i < 7; i++){
-        for(int j = 0; j < 7; j++){
-            map[i][j] = i%2==1 && j%2==1 ? 2 : 0;
-        }
-    }
+    initMap(map);
 
     wallFollow();
-
-    see(distances,direction);
-    updateMap(distances,location,map);
-    printMap(map);
-
-    location = 4;
-    forward();
-
-    turn(1,&direction);
-
-    location = 5;
-    forward();
-    location = 6;
-    forward();
-
-    turn(0,&direction);
-
-    location = 10;
-    forward();
-
-    turn(1,&direction);
-
-    location = 11;
-    forward();
-
-
 
 
     return 0;
