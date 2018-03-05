@@ -68,10 +68,9 @@ void wallFollow(){
             //if you can turn left: do it
             if (getLeftDist() == 20){
                 //turnThroughAngle(90);
-                pi = 2.7;
-                // turning 90 - left
+                pi = 2.9495;
                 while (getAngle() > angle - pi/2){
-                    drive_speed(-20,20);
+                    drive_speed(-9,9);
                 }
                 updateDirection(&direction,-1);
                 pause(100);
@@ -88,9 +87,9 @@ void wallFollow(){
             else if (getRightDist() == 20){
                 //turnThroughAngle(-90);
                 // turning 90 + right
-                pi = 2.7;
+                pi = 2.9495;
                 while (getAngle() < angle + pi/2){
-                    drive_speed(20,-20);
+                    drive_speed(9,-9);
                 }
                 updateDirection(&direction,1);
                 pause(100);
