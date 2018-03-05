@@ -23,6 +23,54 @@ void detectWalls(int dists[], int direction){
     *frontDist = *frontDist < US_LIMIT ? 1 : 0;
 }
 
+int isCellSurrounded(int visitedCells[], int i){
+    int isSur = 1;
+    if(i < 12 && !visitedCells[i+4]) isSur = 0;
+    if(i % 4 < 3 && !visitedCells[i+1]) isSur = 0;
+    if(i < 3 && !visitedCells[i-4]) isSur = 0;
+    if(i % 4 && !visitedCells[i-1]) isSur = 0;
+
+    return isSur;
+}
+
+int getUncheckedCells(int visitedCells[], int uncheckedCells[]){
+    int j = 0;
+    for(int i = 0; i < 16; i++){
+        if(!visitedCells[i]){
+            if(!isCellSurrounded(visitedCells, i)){
+                uncheckedCells[j] = i;
+                j++;
+            }
+        }
+    }
+    return j;
+}
+
+int getTargetLocation(int visitedCells[]){
+    int locationToGo = -1;
+    int minCellsUnchecked = 4;
+    int uncheckedCells[4];
+    int numCellsUnchecked = getUncheckedCells(visitedCells,uncheckedCells);
+
+    for(int i = 0; i < numCellsUnchecked; i++){
+        int tempVisitedCells[16];
+        int cellLocation = uncheckedCells[i];
+        // copy visited cells array
+        for(int j = 0; j < 16; j++){
+            tempVisitedCells[j] = visitedCells[j];
+        }
+        tempVisitedCells[cellLocation] = 1;
+        int a[4];
+        int numCellsToBeUnchecked = getUncheckedCells(tempVisitedCells,a);
+        if(numCellsToBeUnchecked < minCellsUnchecked){
+            minCellsUnchecked = numCellsToBeUnchecked;
+            locationToGo = cellLocation;
+        }
+    }
+
+    return locationToGo;
+}
+
 void initMap(int map[7][7]){
     for(int i = 0; i < 7; i++){
         for(int j = 0; j < 7; j++){
@@ -35,13 +83,7 @@ void printMap(int map[7][7]){
     for(int i = 6; i >= 0; i--){
         for(int j = 0; j < 7; j++){
             int c = map[i][j];
-            if(c == 2){
-                printf(". ");
-            }else if(c == 1){
-                printf("X ");
-            }else{
-                printf("0 ");
-            }
+            printf("%i ",c);
         }
         printf("\n");
     }
@@ -77,6 +119,9 @@ void prettyPrintMap(int map[7][7]){
         printf("*\n");
     }
 }
+
+
+
 
 int updateLocation(int* location, int direction){
     switch(direction){

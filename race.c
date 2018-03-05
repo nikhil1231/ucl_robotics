@@ -11,6 +11,7 @@
 #include "movement.h"
 #include "ir_stuff.h"
 #include "map.h"
+#include "list.h"
 
 #ifdef BUILDING_IN_SIMULATOR
 #include "simulator.h"
@@ -20,33 +21,59 @@ const float MOVE_DISTANCE = 25.8;
 const int TURN_SPEED = 9;
 
 int direction = 0;
-int location = 0;
+int location = -4;
 
 // int map[7][7];
+/* 
+    0 - Unvisited
+    1 - Visited (for pathing)
+    2 - wall
+    3 - null cell
+
+    MAP 1
+    {
+        {0,0,0,0,0,0,0},
+        {2,3,0,3,2,3,0},
+        {0,0,0,2,0,2,0},
+        {0,3,0,3,0,3,0},
+        {0,2,0,0,0,2,0},
+        {0,3,2,3,0,3,2},
+        {0,0,0,0,0,0,0}
+    };
+*/
 int map[7][7] = {
-            {0,0,0,0,0,0,0},
-            {1,2,0,2,1,2,0},
-            {0,0,0,1,0,1,0},
-            {0,2,0,2,0,2,0},
-            {0,1,0,0,0,1,0},
-            {0,2,1,2,0,2,1},
+            {0,2,0,0,0,0,0},
+            {0,3,0,3,2,3,0},
+            {0,0,0,0,0,2,0},
+            {0,3,2,3,0,3,0},
+            {0,0,0,2,0,0,0},
+            {0,3,0,3,0,3,2},
             {0,0,0,0,0,0,0}
         };
 int distances[4];
 int visitedCells[16];
 int path[16];
+int pathCell;
 
 double angle;
 double pi;
 
 
+typedef struct path_node{
+    int loc;
+    struct path_node *left;
+    struct path_node *right;
+} pathNode;
+
+
 void forward(float distance){
+    printf("location: %i\n", location);
     drive_goto(move(distance), move(distance));
     int loc = updateLocation(&location,direction);
     visitedCells[loc] = 1;
     detectWalls(distances,direction);
     updateMap(distances,location,map);
-    prettyPrintMap(map);
+    printMap(map);
 }
 
 void getMeasurements(){
@@ -56,52 +83,55 @@ void getMeasurements(){
     printf("----------------\n");
 }
 
-int isCellSurrounded(int visitedCells[], int i){
-    int isSur = 1;
-    if(i < 12 && !visitedCells[i+4]) isSur = 0;
-    if(i % 4 < 3 && !visitedCells[i+1]) isSur = 0;
-    if(i < 3 && !visitedCells[i-4]) isSur = 0;
-    if(i % 4 && !visitedCells[i-1]) isSur = 0;
-
-    return isSur;
-}
-
-int getUncheckedCells(int visitedCells[], int uncheckedCells[]){
-    int j = 0;
-    for(int i = 0; i < 16; i++){
-        if(!visitedCells[i]){
-            if(!isCellSurrounded(visitedCells, i)){
-                uncheckedCells[j] = i;
-                j++;
-            }
-        }
+int getNextSteps(int locations[], int map[7][7], int location){
+    int i = 0;
+    if(location < 12 && !map[(location/4)*2+1][(location%4)*2]){
+        map[(location/4)*2+1][(location%4)*2] = 1;
+        locations[i] = location + 4;
+        i++;
     }
-    return j;
-}
-
-int getTargetLocation(int visitedCells[]){
-    int locationToGo = -1;
-    int minCellsUnchecked = 4;
-    int uncheckedCells[4];
-    int numCellsUnchecked = getUncheckedCells(visitedCells,uncheckedCells);
-
-    for(int i = 0; i < numCellsUnchecked; i++){
-        int tempVisitedCells[16];
-        int cellLocation = uncheckedCells[i];
-        // copy visited cells array
-        for(int j = 0; j < 16; j++){
-            tempVisitedCells[j] = visitedCells[j];
-        }
-        tempVisitedCells[cellLocation] = 1;
-        int a[4];
-        int numCellsToBeUnchecked = getUncheckedCells(tempVisitedCells,a);
-        if(numCellsToBeUnchecked < minCellsUnchecked){
-            minCellsUnchecked = numCellsToBeUnchecked;
-            locationToGo = cellLocation;
-        }
+    if(location % 4 < 3 && !map[(location/4)*2][(location%4)*2+1]){
+        map[(location/4)*2][(location%4)*2+1] = 1;
+        locations[i] = location + 1;
+        i++;
+    }
+    if(location > 3 && !map[(location/4)*2-1][(location%4)*2]){
+        map[(location/4)*2-1][(location%4)*2] = 1;
+        locations[i] = location - 4;
+        i++;
+    }
+    if(location % 4 && !map[(location/4)*2][(location%4)*2-1]){
+        map[(location/4)*2][(location%4)*2-1] = 1;
+        locations[i] = location - 1;
+        i++;
     }
 
-    return locationToGo;
+    return i;
+}
+
+void findNextNode(ListNode *node){
+    int locations[3];
+    int numSteps = getNextSteps(locations, map, node->loc);
+    printf("path: %i\n", node->loc);
+    for(int i = 0; i < numSteps; i++){
+        if(pathCell != 15){
+            map[(location/4)*2][(location%4)*2] = 1;
+            ListNode* newNode;
+            newNode = malloc(sizeof(ListNode));
+            newNode->loc = locations[i];
+            node->next = newNode;
+            pathCell = locations[i];
+            findNextNode(newNode);
+        }
+    }
+}
+
+ListNode* genPaths(){
+    ListNode* head;
+    head = malloc(sizeof(ListNode));
+    head->loc = 0;
+    findNextNode(head);
+    return head;
 }
 
 void wallFollow(){
@@ -163,19 +193,21 @@ int main(int argc, const char* argv[])
 #ifdef BUILDING_IN_SIMULATOR
     simulator_startNewSmokeTrail();
 #endif
-    prettyPrintMap(map);
-    initMap(map);
+    printMap(map);
+    // initMap(map);
 
     for(int i = 0; i < 16; i++){
         visitedCells[i] = 0;
         path[i] = -1;
-        if(i < 4) uncheckedCells[i] = 0;
     }
     visitedCells[0] = 1;
 
-    wallFollow();
+    // wallFollow();
 
-    getTargetLocation(visitedCells);
+    // getTargetLocation(visitedCells);
+
+    // genPaths();
+    printList(genPaths());
 
 
     return 0;
