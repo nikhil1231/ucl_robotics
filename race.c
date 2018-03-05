@@ -21,7 +21,16 @@ const float MOVE_DISTANCE = 25.8;
 int direction = 0;
 int location = 0;
 
-int map[7][7];
+// int map[7][7];
+int map[7][7] = {
+            {0,0,0,0,0,0,0},
+            {1,2,0,2,1,2,0},
+            {0,0,0,1,0,1,0},
+            {0,2,0,2,0,2,0},
+            {0,1,0,0,0,1,0},
+            {0,2,1,2,0,2,1},
+            {0,0,0,0,0,0,0}
+        };
 int distances[4];
 int path[16];
 
@@ -124,7 +133,7 @@ int main(int argc, const char* argv[])
 #ifdef BUILDING_IN_SIMULATOR
     simulator_startNewSmokeTrail();
 #endif
-
+    prettyPrintMap(map);
     initMap(map);
 
     wallFollow();
