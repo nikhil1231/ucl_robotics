@@ -18,11 +18,12 @@ void detectWalls(int dists[], int direction){
     *rightDist = getRightDist();
 
     // see if there's a wall around
-    *leftDist = *leftDist < IR_LIMIT ? 1 : 0;
-    *rightDist = *rightDist < IR_LIMIT ? 1 : 0;
-    *frontDist = *frontDist < US_LIMIT ? 1 : 0;
+    *leftDist = *leftDist < IR_LIMIT ? 2 : 0;
+    *rightDist = *rightDist < IR_LIMIT ? 2 : 0;
+    *frontDist = *frontDist < US_LIMIT ? 2 : 0;
 }
 
+// returns true if all 4 surrounding cells are visited.
 int isCellSurrounded(int visitedCells[], int i){
     int isSur = 1;
     if(i < 12 && !visitedCells[i+4]) isSur = 0;
@@ -33,6 +34,7 @@ int isCellSurrounded(int visitedCells[], int i){
     return isSur;
 }
 
+// returns non-surrounded cells.
 int getUncheckedCells(int visitedCells[], int uncheckedCells[]){
     int j = 0;
     for(int i = 0; i < 16; i++){
@@ -46,6 +48,7 @@ int getUncheckedCells(int visitedCells[], int uncheckedCells[]){
     return j;
 }
 
+// get optimal cell to go to if there are unchecked cells
 int getTargetLocation(int visitedCells[]){
     int locationToGo = -1;
     int minCellsUnchecked = 4;
@@ -74,7 +77,7 @@ int getTargetLocation(int visitedCells[]){
 void initMap(int map[7][7]){
     for(int i = 0; i < 7; i++){
         for(int j = 0; j < 7; j++){
-            map[i][j] = i%2==1 && j%2==1 ? 2 : 0;
+            map[i][j] = i%2==1 && j%2==1 ? 3 : 0;
         }
     }
 }
@@ -119,9 +122,6 @@ void prettyPrintMap(int map[7][7]){
         printf("*\n");
     }
 }
-
-
-
 
 int updateLocation(int* location, int direction){
     switch(direction){

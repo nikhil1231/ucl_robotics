@@ -88,13 +88,12 @@ typedef struct path_node{
 
 
 void forward(float distance){
-    printf("location: %i\n", location);
     drive_goto(move(distance), move(distance));
     int loc = updateLocation(&location,direction);
     visitedCells[loc] = 1;
     detectWalls(distances,direction);
     updateMap(distances,location,map);
-    prettyPrintMap(map);
+    printMap(map);
 }
 
 void getMeasurements(){
@@ -104,6 +103,8 @@ void getMeasurements(){
     printf("----------------\n");
 }
 
+// get the possible cells robot can move to given current location.
+// Checks the wall cell in 'map' and only treats '0' cells as valid to move into.
 int getNextSteps(int locations[], int map[7][7], int location){
     int i = 0;
     if(location < 12 && !map[(location/4)*2+1][(location%4)*2]){
@@ -159,9 +160,7 @@ void wallFollow(){
     /// enter maze:
     forward(30.5);
     
-    // start going through:
-    int counter = 0;
-    while(counter < 14){
+    while(1){
 
         angle = getAngle();
         
@@ -173,6 +172,14 @@ void wallFollow(){
                 drive_speed(-TURN_SPEED,TURN_SPEED);
             }
             updateDirection(&direction,-1);
+            if(!location && direction){
+                pause(100);
+                drive_speed(0,0);
+                pause(100);
+                drive_goto(move(MOVE_DISTANCE), move(MOVE_DISTANCE));
+                location = -4;
+                break;
+            }
         }
 
         // else (if you can't turn left), if you can keep going straight: go straight
@@ -203,8 +210,7 @@ void wallFollow(){
         drive_speed(0,0);
         pause(100);
         forward(MOVE_DISTANCE);
-    
-        counter++;
+
     }
 }
 
