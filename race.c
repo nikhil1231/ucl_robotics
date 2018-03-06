@@ -23,7 +23,7 @@ const int TURN_SPEED = 9;
 int direction = 0;
 int location = -4;
 
-// int map[7][7];
+int map[7][7];
 /* 
     0 - Unvisited
     1 - Visited (for pathing)
@@ -40,16 +40,37 @@ int location = -4;
         {0,3,2,3,0,3,2},
         {0,0,0,0,0,0,0}
     };
+
+    MAP 2
+    {
+        {0,2,0,0,0,0,0},
+        {0,3,0,3,2,3,0},
+        {0,0,0,0,0,2,0},
+        {0,3,2,3,0,3,0},
+        {0,0,0,2,0,0,0},
+        {0,3,0,3,0,3,2},
+        {0,0,0,0,0,0,0}
+    };
+
+    {
+        {0,0,0,0,0,0,0},
+        {0,3,0,3,0,3,0},
+        {0,0,0,0,0,0,0},
+        {0,3,0,3,0,3,0},
+        {0,0,0,0,0,0,0},
+        {0,3,0,3,0,3,0},
+        {0,0,0,2,0,0,0}
+    };
 */
-int map[7][7] = {
-            {0,2,0,0,0,0,0},
-            {0,3,0,3,2,3,0},
-            {0,0,0,0,0,2,0},
-            {0,3,2,3,0,3,0},
-            {0,0,0,2,0,0,0},
-            {0,3,0,3,0,3,2},
-            {0,0,0,0,0,0,0}
-        };
+// int map[7][7] = {
+//             {0,0,0,0,0,0,0},
+//             {0,3,0,3,0,3,0},
+//             {0,0,0,0,0,0,0},
+//             {0,3,0,3,0,3,0},
+//             {0,0,0,0,0,0,0},
+//             {0,3,0,3,0,3,0},
+//             {0,0,0,2,0,0,0}
+//         };
 int distances[4];
 int visitedCells[16];
 int path[16];
@@ -73,7 +94,7 @@ void forward(float distance){
     visitedCells[loc] = 1;
     detectWalls(distances,direction);
     updateMap(distances,location,map);
-    printMap(map);
+    prettyPrintMap(map);
 }
 
 void getMeasurements(){
@@ -112,7 +133,7 @@ int getNextSteps(int locations[], int map[7][7], int location){
 void findNextNode(ListNode *node){
     int locations[3];
     int numSteps = getNextSteps(locations, map, node->loc);
-    printf("path: %i\n", node->loc);
+    // printf("path: %i\n", node->loc);
     for(int i = 0; i < numSteps; i++){
         if(pathCell != 15){
             map[(location/4)*2][(location%4)*2] = 1;
@@ -194,7 +215,7 @@ int main(int argc, const char* argv[])
     simulator_startNewSmokeTrail();
 #endif
     printMap(map);
-    // initMap(map);
+    initMap(map);
 
     for(int i = 0; i < 16; i++){
         visitedCells[i] = 0;
@@ -202,12 +223,12 @@ int main(int argc, const char* argv[])
     }
     visitedCells[0] = 1;
 
-    // wallFollow();
+    wallFollow();
 
     // getTargetLocation(visitedCells);
 
     // genPaths();
-    printList(genPaths());
+    // printList(genPaths());
 
 
     return 0;
