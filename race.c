@@ -7,7 +7,7 @@
 #include "simpletext.h"
 #include "simpletools.h"
 #include "ping.h"
-#include "turning.h"
+// #include "turning.h"
 #include "movement.h"
 #include "ir_stuff.h"
 #include "map.h"
@@ -173,16 +173,7 @@ void wallFollow(){
         
         //if you can turn left: do it
         if (getLeftDist() == 20){
-            //turnThroughAngle(90);
-            pi = 2.9495;
-            // while (getAngle() > angle - pi/2){
-            //     drive_speed(-TURN_SPEED,TURN_SPEED);
-            // }
-            drive_speed(-50,50);
-            pause(516);
-            drive_speed(0,0);
-            pause(1000);
-            updateDirection(&direction,-1);
+            turn(-1,&direction);
             // Determines end of circuit
             if(!location && direction){
                 pause(100);
@@ -196,44 +187,21 @@ void wallFollow(){
 
         // else (if you can't turn left), if you can keep going straight: go straight
         else if (ping_cm(8) > 30){
+            // do nothing
         }
         // else (if you can't reach either of previous two steps), if you can turn right: do it
         else if (getRightDist() == 20){
-            //turnThroughAngle(-90);
-            // turning 90 + right
-            // pi = 2.9495;
-            // while (getAngle() < angle + pi/2){
-            //     drive_speed(TURN_SPEED,-TURN_SPEED);
-            // }
-            drive_speed(50,-50);
-            pause(516);
-            drive_speed(0,0);
-            pause(1000);
-            updateDirection(&direction,1);
+            turn(1,&direction);
         }
 
         // if you reached a dead end, turn back by turning 180
         else{
-            //turnThroughAngle(180);
-            pi = 2.92;
-            // turning 180 - left
-            // while (getAngle() > angle - pi){
-            //     drive_speed(-20,20);
-            // }
-            drive_speed(50,-50);
-            pause(1032);
-            drive_speed(0,0);
-            pause(1000);
-            updateDirection(&direction,2);
+            turn(2,&direction);
         }
         pause(100);
         drive_speed(0,0);
         pause(100);
         forward(MOVE_TIME);
-
-        
-
-        if(!i%3) correctPosition(distances);
 
     }
 }
