@@ -13,14 +13,14 @@ void detectWalls(int dists[], int direction){
     int* rightDist = &dists[(direction+2)%4];
     dists[(direction+3)%4] = -1;
 
-    *leftDist = getLeftDist();
-    *frontDist = ping_cm(8);
-    *rightDist = getRightDist();
+    // *leftDist = getLeftDist();
+    // *frontDist = ping_cm(8);
+    // *rightDist = getRightDist();
 
     // see if there's a wall around
-    *leftDist = *leftDist < IR_LIMIT ? 2 : 0;
-    *rightDist = *rightDist < IR_LIMIT ? 2 : 0;
-    *frontDist = *frontDist < US_LIMIT ? 2 : 0;
+    *leftDist = getLeftDist() < IR_LIMIT ? 2 : 0;
+    *rightDist = getRightDist() < IR_LIMIT ? 2 : 0;
+    *frontDist = ping_cm(8) < US_LIMIT ? 2 : 0;
 }
 
 // returns true if all 4 surrounding cells are visited.
