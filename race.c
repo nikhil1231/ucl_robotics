@@ -169,6 +169,7 @@ void wallFollow(){
         
         // Determines end of circuit
         if(!location && direction){
+            if(direction == 3) turn(-1,&direction);
             moveFor(60, MOVE_TIME);
             turn(2,&direction);
             location = -4;
@@ -264,12 +265,12 @@ int main(int argc, const char* argv[])
     // }
 
 
-    drive_speed(60,60);
-    pause(MOVE_TIME/2 - MOVE_TIME + FIRST_MOVE_TIME);
+    // drive_speed(60,60);
+    // pause(MOVE_TIME/2 - MOVE_TIME + FIRST_MOVE_TIME);
 
-    movePath(path);
+    // movePath(path);
 
-    // wallFollow();
+    wallFollow();
 
     // getTargetLocation(visitedCells);
 
