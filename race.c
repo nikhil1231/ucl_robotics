@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 // #include <sys/time.h>
+#include <stdbool.h>
+#include <string.h>
 
 #include "abdrive.h"
 #include "simpletext.h"
@@ -26,6 +28,68 @@ int direction = 0;
 int location = -4;
 int lastTime = 0;
 // struct timeval tv;
+
+//to store matrix cell cordinates
+struct Point{
+    int x;
+    int y;
+};
+
+// a data structure for queue used in BFS
+struct queueNode{
+    struct Point pt;  // The cordinates of a cell
+    int dist;  // cell's distance of from the source
+};
+
+// implement queue:
+#define MAX 20000
+
+struct queueNode q[MAX];
+int front = 0;
+int rear = -1;
+int itemCount = 0;
+
+struct queueNode peep() {
+   return q[front];
+}
+
+bool isEmpty() {
+   return itemCount == 0;
+}
+
+bool isFull() {
+   return itemCount == MAX;
+}
+
+int size() {
+   return itemCount;
+}  
+
+void push(struct queueNode data) {
+
+   if(!isFull()) {
+	
+      if(rear == MAX-1) {
+         rear = -1;            
+      }       
+
+      q[++rear] = data;
+      itemCount++;
+   }
+}
+
+struct queueNode pop() {
+   struct queueNode data = q[front++];
+	
+   if(front == MAX) {
+      front = 0;
+   }
+	
+   itemCount--;
+   return data;  
+}
+
+// end of queue implementation
 
 int map[7][7];
 /* 
@@ -197,6 +261,73 @@ void wallFollow(){
     }
 }
 
+bool isSafe(int map[7][7], int visited[7][7], int x, int y){
+    if (map[x][y] == 2 || map[x][y] == 3 || visited[x][y]){
+        return false;
+    }
+
+    return true;
+}
+
+bool isValid(int row, int col)
+{
+    // return true if row number and column number
+    // is in range
+    return (row >= 0) && (row < 7) &&
+           (col >= 0) && (col < 7);
+}
+
+// These arrays are used to get row and column
+// numbers of 4 neighbours of a given cell
+int rowNum[] = {-1, 0, 0, 1};
+int colNum[] = {0, -1, 1, 0};
+
+int BFS(int map[][7]){
+    struct Point src = {0,0};
+    struct Point dest = {6,6};
+
+    bool visited[7][7];
+    memset(visited, false, sizeof(visited));
+
+    // Mark the source cell as visited
+    visited[src.x][src.y] = true;
+
+    struct queueNode s = {src, 0};
+    push(s);
+
+    while (!isEmpty()){
+        struct queueNode curr = peep();
+        struct Point pt = curr.pt;
+
+        // If we have reached the destination cell, we are done
+        if (pt.x == dest.x && pt.y == dest.y)
+            {return curr.dist;}
+
+        // Otherwise dequeue the front cell in the queue
+        // and enqueue its adjacent cells
+        pop();
+
+        for (int i = 0; i < 4; i++)
+        {
+            int row = pt.x + rowNum[i];
+            int col = pt.y + colNum[i];
+             
+            // if adjacent cell is valid, has path and
+            // not visited yet, enqueue it.
+            if (isValid(row, col) && (map[row][col] == 0) && !visited[row][col])
+            {
+                // mark cell as visited and enqueue it
+                visited[row][col] = true;
+                struct queueNode Adjcell = { {row, col}, curr.dist + 1 };
+                push(Adjcell);
+            }
+        }
+        
+    }
+
+    return -1;
+    
+}
 
 int main(int argc, const char* argv[])
 {
@@ -271,6 +402,8 @@ int main(int argc, const char* argv[])
     // movePath(path);
 
     wallFollow();
+    int dist = BFS(map);
+    printf ("\nShortest path is: %d", dist);
 
     // getTargetLocation(visitedCells);
 
