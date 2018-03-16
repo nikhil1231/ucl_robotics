@@ -91,16 +91,7 @@ struct queueNode pop() {
 
 // end of queue implementation
 
-int map[7][7] = 
-{
-    {0,0,0,0,0,0,0},
-    {2,3,0,3,2,3,0},
-    {0,0,0,2,0,2,0},
-    {0,3,0,3,0,3,0},
-    {0,2,0,0,0,2,0},
-    {0,3,2,3,0,3,2},
-    {0,0,0,0,0,0,0}
-};
+int map[7][7];
 /* 
     0 - Unvisited
     1 - Visited (for pathing)
@@ -410,6 +401,8 @@ int main(int argc, const char* argv[])
     // movePath(path);
 
     wallFollow();
+    int dist = BFS(map);
+    printf ("\nShortest path is: %d", dist);
 
     // getTargetLocation(visitedCells);
 
