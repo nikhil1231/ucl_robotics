@@ -167,16 +167,16 @@ void wallFollow(){
     while(1){
         printf("Ir right: %i\n", getRightDist());
         
+        // Determines end of circuit
+        if(!location && direction){
+            moveFor(60, MOVE_TIME);
+            turn(2,&direction);
+            location = -4;
+            break;
+        }
         //if you can turn left: do it
         if (getLeftDist() == 20){
             turn(-1,&direction);
-            // Determines end of circuit
-            if(!location && direction){
-                moveFor(60, MOVE_TIME);
-                turn(2,&direction);
-                location = -4;
-                break;
-            }
         }
 
         // else (if you can't turn left), if you can keep going straight: go straight
@@ -264,12 +264,12 @@ int main(int argc, const char* argv[])
     // }
 
 
-    drive_speed(60,60);
-    pause(MOVE_TIME/2 - MOVE_TIME + FIRST_MOVE_TIME);
+    // drive_speed(60,60);
+    // pause(MOVE_TIME/2 - MOVE_TIME + FIRST_MOVE_TIME);
 
-    movePath(path);
+    // movePath(path);
 
-    // wallFollow();
+    wallFollow();
 
     // getTargetLocation(visitedCells);
 
