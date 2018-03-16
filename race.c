@@ -211,7 +211,7 @@ int main(int argc, const char* argv[])
     }
     visitedCells[0] = 1;
 
-    int mapNum = 4;
+    int mapNum = 1;
 
     if(mapNum == 1){
         path[0] = 0;
@@ -264,12 +264,12 @@ int main(int argc, const char* argv[])
     // }
 
 
-    // drive_speed(60,60);
-    // pause(MOVE_TIME/2 - MOVE_TIME + FIRST_MOVE_TIME);
+    drive_speed(60,60);
+    pause(MOVE_TIME/2 - MOVE_TIME + FIRST_MOVE_TIME);
 
-    // movePath(path);
+    movePath(path);
 
-    wallFollow();
+    // wallFollow();
 
     // getTargetLocation(visitedCells);
 
