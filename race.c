@@ -24,16 +24,25 @@ int direction = 0;
 int location = -4;
 
 int map[7][7];
+int visitedCorners[3];
 
 int distances[4];
 int path[16];
 
 void forward(float time){
     moveFor(60, time);
-    updateLocation(&location,direction);
+    updateLocation(&location,direction,visitedCorners);
     detectWalls(distances,direction);
     updateMap(distances,location,map);
     // prettyPrintMap(map);
+}
+
+int hasVisitedAllCorners(){
+    int i = 1;
+    for(int j = 0; j < 3; j++){
+        if(!visitedCorners[j]) i = 0;
+    }
+    return i;
 }
 
 void wallFollow(){
@@ -42,7 +51,7 @@ void wallFollow(){
 
     while(1){
         // Determines end of circuit
-        if(!location && direction){
+        if(!location && direction && hasVisitedAllCorners()){
             if(direction == 3) turn(-1,&direction);
             moveFor(60, FINAL_MOVE_TIME);
             turn(2,&direction);

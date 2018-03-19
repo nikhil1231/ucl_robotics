@@ -63,7 +63,7 @@ void prettyPrintMap(int map[7][7]){
     }
 }
 
-void updateLocation(int* location, int direction){
+void updateLocation(int* location, int direction, int visited[]){
     switch(direction){
         case 0:
             if(*location < 12) *location += 4;
@@ -78,6 +78,10 @@ void updateLocation(int* location, int direction){
             if(*location % 4) *location -= 1;
             break;
     }
+
+    if(*location == 12) visited[0] = 1;
+    if(*location == 15) visited[1] = 1;
+    if(*location == 3) visited[2] = 1;
 }
 
 void updateMap(int dists[], int location, int map[7][7]){
