@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "simpletools.h"
-
 const int IR_LIMIT = 20;
 const int US_LIMIT = 30;
 
@@ -17,57 +12,6 @@ void detectWalls(int dists[], int direction){
     *leftDist = getLeftDist() < IR_LIMIT ? 2 : 0;
     *rightDist = getRightDist() < IR_LIMIT ? 2 : 0;
     *frontDist = ping_cm(8) < US_LIMIT ? 2 : 0;
-}
-
-// returns true if all 4 surrounding cells are visited.
-int isCellSurrounded(int visitedCells[], int i){
-    int isSur = 1;
-    if(i < 12 && !visitedCells[i+4]) isSur = 0;
-    if(i % 4 < 3 && !visitedCells[i+1]) isSur = 0;
-    if(i < 3 && !visitedCells[i-4]) isSur = 0;
-    if(i % 4 && !visitedCells[i-1]) isSur = 0;
-
-    return isSur;
-}
-
-// returns non-surrounded cells.
-int getUncheckedCells(int visitedCells[], int uncheckedCells[]){
-    int j = 0;
-    for(int i = 0; i < 16; i++){
-        if(!visitedCells[i]){
-            if(!isCellSurrounded(visitedCells, i)){
-                uncheckedCells[j] = i;
-                j++;
-            }
-        }
-    }
-    return j;
-}
-
-// get optimal cell to go to if there are unchecked cells
-int getTargetLocation(int visitedCells[]){
-    int locationToGo = -1;
-    int minCellsUnchecked = 4;
-    int uncheckedCells[4];
-    int numCellsUnchecked = getUncheckedCells(visitedCells,uncheckedCells);
-
-    for(int i = 0; i < numCellsUnchecked; i++){
-        int tempVisitedCells[16];
-        int cellLocation = uncheckedCells[i];
-        // copy visited cells array
-        for(int j = 0; j < 16; j++){
-            tempVisitedCells[j] = visitedCells[j];
-        }
-        tempVisitedCells[cellLocation] = 1;
-        int a[4];
-        int numCellsToBeUnchecked = getUncheckedCells(tempVisitedCells,a);
-        if(numCellsToBeUnchecked < minCellsUnchecked){
-            minCellsUnchecked = numCellsToBeUnchecked;
-            locationToGo = cellLocation;
-        }
-    }
-
-    return locationToGo;
 }
 
 void initMap(int map[7][7]){
@@ -119,7 +63,7 @@ void prettyPrintMap(int map[7][7]){
     }
 }
 
-int updateLocation(int* location, int direction){
+void updateLocation(int* location, int direction){
     switch(direction){
         case 0:
             if(*location < 12) *location += 4;
@@ -134,7 +78,6 @@ int updateLocation(int* location, int direction){
             if(*location % 4) *location -= 1;
             break;
     }
-    return *location;
 }
 
 void updateMap(int dists[], int location, int map[7][7]){

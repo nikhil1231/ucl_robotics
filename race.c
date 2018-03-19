@@ -23,74 +23,19 @@ const float MAX_SPEED = 128;
 const float MOVE_TIME = 2100;
 const float FIRST_MOVE_TIME = 2450;
 const float FINAL_MOVE_TIME = 1500;
-// const float TURN_STRENGTH = 60;
 
 // North is 0
 int direction = 0;
 int location = -4;
-int lastTime = 0;
 
-// int map[7][7];
-/* 
-    0 - Unvisited
-    1 - Visited (for pathing)
-    2 - wall
-    3 - null cell
+int map[7][7];
 
-    MAP 1
-    {
-        {0,0,0,0,0,0,0},
-        {2,3,0,3,2,3,0},
-        {0,0,0,2,0,2,0},
-        {0,3,0,3,0,3,0},
-        {0,2,0,0,0,2,0},
-        {0,3,2,3,0,3,2},
-        {0,0,0,0,0,0,0}
-    };
-
-    MAP 2
-    {
-        {0,2,0,0,0,0,0},
-        {0,3,0,3,2,3,0},
-        {0,0,0,0,0,2,0},
-        {0,3,2,3,0,3,0},
-        {0,0,0,2,0,0,0},
-        {0,3,0,3,0,3,2},
-        {0,0,0,0,0,0,0}
-    };
-
-    {
-        {0,0,0,0,0,0,0},
-        {0,3,0,3,0,3,0},
-        {0,0,0,0,0,0,0},
-        {0,3,0,3,0,3,0},
-        {0,0,0,0,0,0,0},
-        {0,3,0,3,0,3,0},
-        {0,0,0,2,0,0,0}
-    };
-*/
-int map[7][7] = {
-            {0,0,0,0,0,0,0},
-            {2,3,0,3,2,3,0},
-            {0,0,0,2,0,2,0},
-            {0,3,0,3,0,3,0},
-            {0,2,0,0,0,2,0},
-            {0,3,2,3,0,3,2},
-            {0,0,0,0,0,0,0}
-        };
 int distances[4];
-int visitedCells[16];
 int path[16];
-int pathCell;
-
-double angle;
-double pi;
-
 
 void forward(float time){
     moveFor(60, time);
-    int loc = updateLocation(&location,direction);
-    visitedCells[loc] = 1;
+    updateLocation(&location,direction);
     detectWalls(distances,direction);
     updateMap(distances,location,map);
     // prettyPrintMap(map);
@@ -131,65 +76,11 @@ void wallFollow(){
     }
 }
 
-bool isSafe(int map[7][7], int visited[7][7], int x, int y){
-    if (map[x][y] == 2 || map[x][y] == 3 || visited[x][y]){
-        return false;
-    }
-
-    return true;
-}
-
-bool isValid(int row, int col)
-{
-    return (row >= 0) && (row < 7) && (col >= 0) && (col < 7);
-}
-
-void buildPathTree(int map[][7], int path[]){
-    struct Point src = {0,0};
-    int rowNum[] = {-1, 0, 0, 1};
-    int colNum[] = {0, -1, 1, 0};
-    int index = 0;
-
-    bool visited[7][7];
-    memset(visited, false, sizeof(visited));
-
-    visited[src.x][src.y] = true;
-
-    struct queueNode s = {src, -1};
-    push(s);
-
-    while (true){
-        struct queueNode curr = get(index);
-        struct Point pt = curr.pt;
-
-        if (pt.x == 6 && pt.y == 6){
-            getPath(curr ,path);
-            return;
-        }
-
-        for (int i = 0; i < 4; i++)
-        {
-            int row = pt.x + rowNum[i];
-            int col = pt.y + colNum[i];
-            
-            if (isValid(row, col) && (map[row][col] == 0) && !visited[row][col])
-            {
-                visited[row][col] = true;
-                struct queueNode Adjcell = { {row, col}, index };
-                push(Adjcell);
-            }
-        }
-        
-        index ++;
-    }
-}
-
 int main(int argc, const char* argv[])
 {
     #ifdef BUILDING_IN_SIMULATOR
         simulator_startNewSmokeTrail();
     #endif
-    // printMap(map);
     initMap(map);
 
     memset(path, -2, sizeof(path));

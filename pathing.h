@@ -1,7 +1,47 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 const int TURN_STRENGTH = 57;
+
+int isValid(int row, int col){
+    return (row >= 0) && (row < 7) && (col >= 0) && (col < 7);
+}
+
+void buildPathTree(int map[][7], int path[]){
+    int rowNum[] = {-1, 0, 0, 1};
+    int colNum[] = {0, -1, 1, 0};
+    int index = 0;
+
+    int visitedCells[7][7];
+    memset(visitedCells, 0, sizeof(visitedCells));
+    visitedCells[0][0] = 1;
+
+
+    struct queueNode startingNode = {{0,0}, -1};
+    push(startingNode);
+
+    while (1){
+        struct queueNode curr = get(index);
+        struct Point p = curr.p;
+
+        if (p.x == 6 && p.y == 6){
+            getPath(curr ,path);
+            return;
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            int row = p.x + rowNum[i];
+            int col = p.y + colNum[i];
+            
+            if (isValid(row, col) && (map[row][col] == 0) && !visitedCells[row][col])
+            {
+                visitedCells[row][col] = 1;
+                struct queueNode Adjcell = { {row, col}, index };
+                push(Adjcell);
+            }
+        }
+        
+        index ++;
+    }
+}
 
 void movePath(int path[]){
     int i = 0,j;

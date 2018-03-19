@@ -1,9 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "abdrive.h"
-#include "simpletools.h"
-
 int left, right;
 int turnTime = 516;
 
