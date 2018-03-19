@@ -194,7 +194,7 @@ int main(int argc, const char* argv[])
 
     memset(path, -2, sizeof(path));
 
-    int mapNum = 4;
+    int mapNum = 5;
 
     if(mapNum == 1){
         path[0] = 0;
@@ -207,9 +207,9 @@ int main(int argc, const char* argv[])
     }else if(mapNum == 2){
         path[0] = 0;
         path[1] = 4;
-        path[2] = 8;
-        path[3] = 12;
-        path[4] = 13;
+        path[2] = 5;
+        path[3] = 6;
+        path[4] = 10;
         path[5] = 14;
         path[6] = 15;
     }else if(mapNum == 3){
@@ -236,6 +236,28 @@ int main(int argc, const char* argv[])
         path[12] = 10;
         path[13] = 14;
         path[14] = 15;
+    }else if(mapNum == 5){
+        path[0] = 0;
+        path[1] = 1;
+        path[2] = 2;
+        path[3] = 3;
+        path[4] = 7;
+        path[5] = 6;
+        path[6] = 5;
+        path[7] = 4;
+        path[8] = 8;
+        path[9] = 9;
+        path[10] = 10;
+        path[11] = 14;
+        path[12] = 15;
+    }else if(mapNum == 8){
+        path[0] = 0;
+        path[1] = 1;
+        path[2] = 2;
+        path[3] = 6;
+        path[4] = 10;
+        path[5] = 14;
+        path[6] = 15;
     }
 
     wallFollow();

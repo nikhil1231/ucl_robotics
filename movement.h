@@ -32,22 +32,39 @@ static void turn(int amount, int* dir){
     pause(1000);
 }
 
+// use for when the first move is straight
 static void setMove(int amount, int speed){
 	int straightTime = 1000;
-	int turnTime = 970;
+	int turnTime = 900;
 	int speedCap = 6;
+	// modded for first turn
 	if(speed > speedCap) speed = speedCap;
-
-	// amount *= (1 + (speedCap-speed)/1000.0);
 
 	drive_speed(128+amount,128-amount);
 	if(!amount){
 		// pause(straightTime - speed * speed * 0.5);
-		pause(straightTime - speed * 6);
+		pause(straightTime + (speedCap - speed) * 6);
 		return;
 	}
 	pause(turnTime);
-	// pause(turnTime + (speedCap-speed) * 10);
+}
+
+static void setTurnMove(int amount, int speed, int turnTime){
+	int straightTime = 1000;
+	int speedCap = 6;
+	// modded for first turn
+	// if(speed < 3) amount *= 1.4;
+
+	if(speed > speedCap) speed = speedCap;
+
+
+	drive_speed(128+amount,128-amount);
+	if(!amount){
+		// pause(straightTime - speed * speed * 0.5);
+		pause(straightTime + (speedCap - speed) * 60);
+		return;
+	}
+	pause(turnTime + (speedCap-speed) * -35);
 }
 
 int getSpeed(int* lastTime, struct timeval *tv){
@@ -61,6 +78,8 @@ int getSpeed(int* lastTime, struct timeval *tv){
     int tempLastTime = *lastTime;
 
     *lastTime = time;
+
+    tickDiffRight = tickDiffRight > tickDiffLeft ? tickDiffRight : tickDiffLeft;
 
     return tickDiffRight * 20000 / (time - tempLastTime);
 }
