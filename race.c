@@ -93,7 +93,7 @@ void forward(float time){
     visitedCells[loc] = 1;
     detectWalls(distances,direction);
     updateMap(distances,location,map);
-    prettyPrintMap(map);
+    // prettyPrintMap(map);
 }
 
 void wallFollow(){
@@ -194,16 +194,26 @@ int main(int argc, const char* argv[])
 
     memset(path, -2, sizeof(path));
 
-    int mapNum = 5;
+    int mapNum = 1;
 
     if(mapNum == 1){
+        // path[0] = 0;
+        // path[1] = 1;
+        // path[2] = 5;
+        // path[3] = 9;
+        // path[4] = 10;
+        // path[5] = 14;
+        // path[6] = 15;
+
         path[0] = 0;
         path[1] = 1;
         path[2] = 5;
-        path[3] = 9;
-        path[4] = 10;
-        path[5] = 14;
-        path[6] = 15;
+        path[3] = 4;
+        path[4] = 8;
+        path[5] = 12;
+        path[6] = 13;
+        path[7] = 14;
+        path[8] = 15;
     }else if(mapNum == 2){
         path[0] = 0;
         path[1] = 4;
@@ -268,9 +278,6 @@ int main(int argc, const char* argv[])
     pause(FINAL_MOVE_TIME / 3);
 
     movePath(path);
-
-    // printf ("\nShortest path is: %d", dist);
-
 
     return 0;
 }

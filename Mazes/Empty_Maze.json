@@ -1,0 +1,49 @@
+{
+    "robotsimulator":
+    {
+	"title": "Empty Maze",
+	"arenaSize": [1600, 2000],
+	"robots":
+	[
+	    {
+		"id": 0,
+		"type": "ActivityBot",
+		"startingPose": [200, 100, 90]
+	    }
+	],
+	"walls":
+	[
+            {
+		"startPoint": [0,0],
+		"endPoint": [0,2000]
+	    },
+	    {
+		"startPoint": [0,2000],
+		"endPoint": [1600, 2000]
+	    },
+	    {
+		"startPoint": [1600,2000],
+		"endPoint": [1600, 400]
+	    },
+	    {
+		"startPoint": [1600,400],
+		"endPoint": [400, 400]
+	    },
+            {
+		"startPoint": [400,400],
+		"endPoint": [400, 0]
+	    },
+            {
+		"startPoint": [400,0],
+		"endPoint": [0, 0]
+	    }
+	],
+        "labels":
+	[
+            {
+                "text": "Start",
+                "centre": [200, 200]
+            }
+        ]
+    }	
+}

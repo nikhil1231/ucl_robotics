@@ -6,7 +6,7 @@ const int TURN_STRENGTH = 57;
 void movePath(int path[]){
     int i = 0,j;
     int tempDir = 0;
-    int isFirstCellTurn = 0;
+    int isModdedTurn = 0;
     int numStraight = 0;
 
     struct timeval tv;
@@ -31,7 +31,7 @@ void movePath(int path[]){
                 break;
         }
         // turn off altered movement if accelerated sufficiently
-        if(numStraight == 1) isFirstCellTurn = 0;
+        if(numStraight == 1) isModdedTurn = 0;
 
         if(!j){
             numStraight ++;
@@ -41,11 +41,19 @@ void movePath(int path[]){
 
         int speed = getSpeed(&lastTime,&tv);
         if(!i && j==1){
-            isFirstCellTurn = 1;
+            isModdedTurn = 1;
             speed = -1;
+            if(path[2] == 5){
+                isModdedTurn = 2;
+            }
         }
 
-        if(isFirstCellTurn){
+        if(isModdedTurn == 2){
+            setTurnMove(j*TURN_STRENGTH, speed, 1400);
+            tempDir = 0;
+            setTurnMove(-j*TURN_STRENGTH, speed, 300);
+            isModdedTurn = 0;
+        }else if(isModdedTurn == 1){
             setTurnMove(j*TURN_STRENGTH*1.3, speed, 970);
         }else{
             setMove(j*TURN_STRENGTH, speed);
