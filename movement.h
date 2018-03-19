@@ -34,7 +34,7 @@ static void turn(int amount, int* dir){
 
 static void setMove(int amount, int speed){
 	int straightTime = 1000;
-	int turnTime = 1033;
+	int turnTime = 970;
 	int speedCap = 6;
 	if(speed > speedCap) speed = speedCap;
 
@@ -46,7 +46,8 @@ static void setMove(int amount, int speed){
 		pause(straightTime - speed * 6);
 		return;
 	}
-	pause(turnTime + (speedCap-speed) * 10);
+	pause(turnTime);
+	// pause(turnTime + (speedCap-speed) * 10);
 }
 
 int getSpeed(int* lastTime, struct timeval *tv){

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-const int TURN_STRENGTH = 50;
+const int TURN_STRENGTH = 53;
 
 void movePath(int path[]){
     int i = 0,j;
@@ -38,3 +38,4 @@ void movePath(int path[]){
     }
     setMove(0,getSpeed(&lastTime,&tv));
 }
+
