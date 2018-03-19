@@ -1,13 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-// #include <sys/time.h>
-#include <stdbool.h>
-#include <string.h>
 
 #include "abdrive.h"
-#include "simpletext.h"
-#include "simpletools.h"
 #include "ping.h"
 #include "movement.h"
 #include "ir_stuff.h"

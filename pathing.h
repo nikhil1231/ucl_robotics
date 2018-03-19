@@ -1,18 +1,11 @@
 const int TURN_STRENGTH = 57;
 
-int isValid(int row, int col){
-    return (row >= 0) && (row < 7) && (col >= 0) && (col < 7);
-}
-
 void buildPathTree(int map[][7], int path[]){
-    int rowNum[] = {-1, 0, 0, 1};
-    int colNum[] = {0, -1, 1, 0};
     int index = 0;
 
     int visitedCells[7][7];
     memset(visitedCells, 0, sizeof(visitedCells));
     visitedCells[0][0] = 1;
-
 
     struct queueNode startingNode = {{0,0}, -1};
     push(startingNode);
@@ -28,14 +21,32 @@ void buildPathTree(int map[][7], int path[]){
 
         for (int i = 0; i < 4; i++)
         {
-            int row = p.x + rowNum[i];
-            int col = p.y + colNum[i];
+            int row, col;
+            switch(i){
+                case 0:
+                    row = p.x + 1;
+                    col = p.y;
+                    break;
+                case 1:
+                    row = p.x - 1;
+                    col = p.y;
+                    break;
+                case 2:
+                    row = p.x;
+                    col = p.y + 1;
+                    break;
+                case 3:
+                    row = p.x;
+                    col = p.y - 1;
+                    break;
+            }
             
-            if (isValid(row, col) && (map[row][col] == 0) && !visitedCells[row][col])
+            if (row >= 0 && row < 7 && col >= 0 && col < 7
+                && (map[row][col] == 0) && !visitedCells[row][col])
             {
                 visitedCells[row][col] = 1;
-                struct queueNode Adjcell = { {row, col}, index };
-                push(Adjcell);
+                struct queueNode cell = {{row, col}, index};
+                push(cell);
             }
         }
         

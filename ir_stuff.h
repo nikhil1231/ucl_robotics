@@ -1,12 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-#include "abdrive.h"
-#include "simpletext.h"
-#include "simpletools.h"
-#include "ping.h"
-
 int getIr(int dac, int freq, int inputPin){
 	int temp = 0;
 	for(int dacVal = 0; dacVal < 160; dacVal += 8)  
