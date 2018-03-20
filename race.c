@@ -92,23 +92,23 @@ int main(int argc, const char* argv[])
     int mapNum = 1;
 
     if(mapNum == 1){
-        // path[0] = 0;
-        // path[1] = 1;
-        // path[2] = 5;
-        // path[3] = 9;
-        // path[4] = 10;
-        // path[5] = 14;
-        // path[6] = 15;
-
         path[0] = 0;
         path[1] = 1;
         path[2] = 5;
-        path[3] = 4;
-        path[4] = 8;
-        path[5] = 12;
-        path[6] = 13;
-        path[7] = 14;
-        path[8] = 15;
+        path[3] = 9;
+        path[4] = 10;
+        path[5] = 14;
+        path[6] = 15;
+
+        // path[0] = 0;
+        // path[1] = 1;
+        // path[2] = 5;
+        // path[3] = 4;
+        // path[4] = 8;
+        // path[5] = 12;
+        // path[6] = 13;
+        // path[7] = 14;
+        // path[8] = 15;
     }else if(mapNum == 2){
         path[0] = 0;
         path[1] = 4;
@@ -165,9 +165,9 @@ int main(int argc, const char* argv[])
         path[6] = 15;
     }
 
-    wallFollow();
+    // wallFollow();
 
-    buildPathTree(map,path);
+    // buildPathTree(map,path);
 
     drive_speed(MAX_SPEED,MAX_SPEED);
     pause(FINAL_MOVE_TIME / 3);

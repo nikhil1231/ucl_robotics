@@ -34,6 +34,14 @@ static void setMove(int amount, int speed){
 	// modded for first turn
 	if(speed > speedCap) speed = speedCap;
 
+
+	if(amount == -2){
+		drive_speed(128,128);
+		pause(400);
+		drive_speed(0,0);
+		return;
+	}
+
 	drive_speed(128+amount,128-amount);
 	if(!amount){
 		// pause(straightTime - speed * speed * 0.5);
