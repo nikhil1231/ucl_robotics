@@ -89,7 +89,7 @@ int main(int argc, const char* argv[])
 
     memset(path, -2, sizeof(path));
 
-    int mapNum = 1;
+    int mapNum = 2;
 
     if(mapNum == 1){
         path[0] = 0;
@@ -112,9 +112,9 @@ int main(int argc, const char* argv[])
     }else if(mapNum == 2){
         path[0] = 0;
         path[1] = 4;
-        path[2] = 5;
-        path[3] = 6;
-        path[4] = 10;
+        path[2] = 8;
+        path[3] = 12;
+        path[4] = 13;
         path[5] = 14;
         path[6] = 15;
     }else if(mapNum == 3){

@@ -40,6 +40,11 @@ static void setMove(int amount, int speed){
 		pause(400);
 		drive_speed(0,0);
 		return;
+	}else if(amount == -3){
+		drive_speed(128,128);
+		pause(300);
+		drive_speed(0,0);
+		return;
 	}
 
 	drive_speed(128+amount,128-amount);

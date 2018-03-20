@@ -115,6 +115,10 @@ void movePath(int path[]){
         tempDir %= 4;
         i++;
     }
-    setMove(-2,getSpeed(&lastTime,&tv));
+    if(!path[i-1]){
+        setMove(-2,getSpeed(&lastTime,&tv));
+    }else{
+        setMove(-3,getSpeed(&lastTime,&tv));
+    }
 }
 
